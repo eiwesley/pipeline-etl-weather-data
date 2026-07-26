@@ -1,0 +1,186 @@
+# ============================
+# Projeto
+# Referência: https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
+#
+# Instale o pacote: python-dotenv
+#
+# Os pontos de atenção estão comentados próximo das chaves, aqui só coloquei um lembrete.
+#
+# Atenção: As versões do Python devem ser consistentes entre:
+#   - project.requires-python
+#   - tool.ruff.target-version
+#   - tool.pyright.pythonVersion
+#
+# Atenção: O nome do pacote principal deve ser consistente entre:
+#   - project.scripts
+#   - tool.ruff.lint.isort.known-first-party
+#   - A pasta dentro de 'src/'
+# ============================
+
+[project]
+name = "pipeline-etl-weather-data"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Wesley Medeiros", email = "wesley.coelho@outlook.com" }]
+requires-python = ">=3.13"
+dependencies = [
+    "pandas>=3.0.5",
+    "psycopg2-binary>=2.9.12",
+    "python-dotenv>=1.1.0",
+    "requests>=2.34.2",
+    "sqlalchemy>=2.0.51",
+]
+
+[project.urls]
+Homepage = "https://github.com/eiwesley"
+Documentation = "https://github.com/eiwesley/python-project-template"
+Repository = "https://github.com/eiwesley/python-project-template"
+Issues = "https://github.com/eiwesley/python-project-template"
+# Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
+
+[project.optional-dependencies]
+dev = []
+
+[project.scripts]
+# Define os comandos de console. A chave ('ambiente-default-python') é o comando.
+# O valor aponta para 'nome_do_pacote.nome_do_modulo:nome_da_funcao'.
+# Ex: 'pipeline_etl_weather_data.main:run' -> src/pipeline_etl_weather_data/main.py (e a função run lá dentro).
+# Lembre-se de sincronizar o nome do pacote com 'known-first-party' do Ruff.
+pipeline_etl_weather_data = "pipeline_etl_weather_data.my_module:run_from_script"
+
+[tool.uv]
+package = true
+
+[dependency-groups]
+dev = ["ruff>=0.12", "basedpyright>=1.31", "pytest>=8.4", "pytest-xdist>=3.8"]
+
+# ============================
+# Lint e formatação (Ruff)
+# ============================
+[tool.ruff]
+line-length = 88
+target-version = "py313"
+src = ["src", "tests"]
+fix = true
+show-fixes = true
+indent-width = 4
+exclude = ["venv", ".venv", "env", ".env", "node_modules", "__pycache__"]
+
+[tool.ruff.lint]
+select = [
+  "ASYNC",
+  "A",
+  "ANN",
+  "B",
+  "BLE",
+  "C4",
+  "C90",
+  "COM",
+  "E",
+  "EM",
+  "ERA",
+  "EXE",
+  "F",
+  "FBT",
+  "FIX",
+  "I",
+  "ICN",
+  "ISC",
+  "Q",
+  "RET",
+  "RSE",
+  "S",
+  "SIM",
+  "SLF",
+  "T10",
+  "T20",
+  "TC",
+  "TD",
+  "TRY",
+  "UP",
+  "W",
+  "YTT",
+  "RUF",
+  "N",
+]
+ignore = ["T201", "COM812"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ANN201", "S101"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "cr-lf"
+
+[tool.ruff.lint.isort]
+# Ensina ao Ruff qual é o pacote principal do seu projeto.
+# Deve ser o mesmo nome da pasta dentro de 'src/'.
+known-first-party = ["pipeline_etl_weather_data"]
+
+
+# ============================
+# Tipagem (basedpyright)
+# ============================
+[tool.basedpyright]
+typeCheckingMode = "strict"
+
+pythonVersion = "3.13"
+
+include = ["src", "tests"]
+
+exclude = [
+  "**/.venv",
+  "**/venv",
+  "**/.env",
+  "**/env",
+  "**/__pycache__",
+  "**/node_modules",
+]
+
+venv = ".venv"
+venvPath = "."
+
+executionEnvironments = [{ root = "src" }]
+
+reportMissingTypeStubs = false
+reportUnknownMemberType = true
+reportUnknownVariableType = true
+reportUnknownArgumentType = true
+reportUnknownParameterType = true
+reportUnknownLambdaType = true
+reportAny = true
+
+useLibraryCodeForTypes = true
+
+# ============================
+# Testes (Pytest)
+# ============================
+[tool.pytest.ini_options]
+addopts = " -ra --strict-config --strict-markers --tb=short --color=yes "
+# Adiciona 'src' ao path do Python durante os testes. Isso permite que
+# os testes em `tests/` importem os módulos de `src/` sem erros.
+pythonpath = ["src"]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+
+# ============================
+# Build e Setuptools
+# ============================
+[build-system]
+requires = ["setuptools>=80", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+# Informa ao setuptools para encontrar os pacotes dentro da pasta 'src'.
+# Essencial para a estrutura de layout com 'src/'.
+where = ["src"]
+
+[tool.setuptools]
+# Mapeia o diretório raiz de pacotes para 'src'.
+package-dir = { "" = "src" }
